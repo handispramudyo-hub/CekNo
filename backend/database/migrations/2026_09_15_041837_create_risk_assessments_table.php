@@ -20,6 +20,7 @@ return new class extends Migration
             $table->enum('risk_level', ['low', 'caution', 'risky', 'high'])->default('low');
             $table->string('explanation')->nullable();
             $table->text('factors')->nullable();
+            $table->timestamp('assessed_at')->nullable();
             $table->timestamps();
 
             $table->index(['phone_number_id', 'model_version']);
