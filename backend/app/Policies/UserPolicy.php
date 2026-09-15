@@ -11,6 +11,11 @@ class UserPolicy
         return $user->isAdmin() && $user->isActive();
     }
 
+    public function moderate(User $user): bool
+    {
+        return $user->isAdmin() && $user->isActive();
+    }
+
     public function viewAnalytics(User $user): bool
     {
         return $user->isAdmin() && $user->isActive();

@@ -16,30 +16,30 @@ use App\Http\Controllers\Api\TagController;
 use App\Http\Controllers\Api\UserController;
 use Illuminate\Support\Facades\Route;
 
-Route::post('/auth/register', [AuthController::class, 'register'])->middleware('throttle:6,1');
-Route::post('/auth/login', [AuthController::class, 'login'])->middleware('throttle:5,1');
+Route::post('/auth/register', [AuthController::class, 'register'])->middleware('throttle:auth.register');
+Route::post('/auth/login', [AuthController::class, 'login'])->middleware('throttle:auth.login');
 Route::get('/ml/health', fn () => response()->json(['status' => 'ok']));
 
 // Search & number profile dapat diakses guest (rate-limited, tanpa identitas pribadi)
-Route::get('/numbers/search', [NumberController::class, 'search'])->middleware('throttle:30,1');
-Route::get('/numbers/{number}', [NumberController::class, 'show']);
+Route::get('/numbers/search', [NumberController::class, 'search'])->middleware('throttle:auth.search');
+Route::get('/numbers/{phone}', [NumberController::class, 'show']);
 
 Route::middleware(['auth:sanctum', 'user.active'])->group(function () {
     Route::post('/auth/logout', [AuthController::class, 'logout']);
     Route::get('/auth/me', [AuthController::class, 'me']);
 
-    Route::get('/numbers/{number}/tags', [TagController::class, 'index']);
-    Route::post('/numbers/{number}/tags', [TagController::class, 'store'])->middleware('throttle:10,1');
+    Route::get('/numbers/{phone}/tags', [TagController::class, 'index']);
+    Route::post('/numbers/{phone}/tags', [TagController::class, 'store'])->middleware('throttle:auth.tag');
 
-    Route::post('/numbers/{number}/reports', [ReportController::class, 'store'])->middleware('throttle:5,1');
-    Route::get('/numbers/{number}/reports', fn (\App\Models\PhoneNumber $number) => response()->json([
-        'reports' => $number->reports()->where('status', 'approved')->latest()->get(),
+    Route::post('/numbers/{phone}/reports', [ReportController::class, 'store'])->middleware('throttle:auth.report');
+    Route::get('/numbers/{phone}/reports', fn (\App\Models\PhoneNumber $phone) => response()->json([
+        'reports' => $phone->reports()->where('status', 'approved')->latest()->get(),
     ]));
 
-    Route::post('/numbers/{number}/reviews', [ReviewController::class, 'store'])->middleware('throttle:10,1');
-    Route::get('/numbers/{number}/reviews', fn (\App\Models\PhoneNumber $number) => response()->json([
-        'reviews' => $number->reviews()->where('status', 'approved')->latest()->get(),
-    ]));
+    Route::post('/numbers/{phone}/reviews', [ReviewController::class, 'store'])->middleware('throttle:auth.review');
+    Route::get('/numbers/{phone}/reviews', fn (\App\Models\PhoneNumber $phone) => response()->json([
+        'reviews' => $phone->reviews()->where('status', 'approved')->latest()->get(),
+    ]));;
 
     Route::get('/user/history', [UserController::class, 'history']);
     Route::get('/user/reports', [UserController::class, 'reports']);

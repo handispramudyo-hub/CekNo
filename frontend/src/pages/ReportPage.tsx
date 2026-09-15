@@ -3,8 +3,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom'
 import toast from 'react-hot-toast'
 
 import { Button, Card } from '../components/ui'
-import { useAuth } from '../hooks/useAuth'
-import { api, apiError } from '../lib/api'
+import { api, apiError, tokenStore } from '../lib/api'
 
 const CATEGORIES: { value: string; label: string; icon: string }[] = [
   { value: 'fraud', label: 'Penipuan', icon: 'gpp_bad' },
@@ -19,7 +18,6 @@ const CATEGORIES: { value: string; label: string; icon: string }[] = [
 export function ReportPage() {
   const [params] = useSearchParams()
   const navigate = useNavigate()
-  const { user } = useAuth()
   const initialPhone = (params.get('phone') ?? '').replace(/\D/g, '')
   const [phone, setPhone] = useState(initialPhone)
   const [category, setCategory] = useState('fraud')
@@ -28,7 +26,7 @@ export function ReportPage() {
 
   function submit(e: React.FormEvent) {
     e.preventDefault()
-    if (!user) {
+    if (!tokenStore.get()) {
       toast('Masuk untuk mengirim laporan — melindungi dari penyalahgunaan.')
       setTimeout(() => navigate('/login?next=/report'), 600)
       return
@@ -64,6 +62,7 @@ export function ReportPage() {
           </label>
           <input
             id="report-phone"
+            data-testid="report-phone"
             inputMode="tel"
             value={phone}
             onChange={(e) => setPhone(e.target.value)}
@@ -97,8 +96,9 @@ export function ReportPage() {
           <label className="text-sm font-semibold" htmlFor="report-desc">
             Deskripsi (min. 10 karakter)
           </label>
-          <textarea
-            id="report-desc"
+<textarea
+          id="report-desc"
+          data-testid="report-desc"
             rows={5}
             value={description}
             onChange={(e) => setDescription(e.target.value)}

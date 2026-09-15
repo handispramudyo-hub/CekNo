@@ -1,17 +1,24 @@
 import { useQuery } from '@tanstack/react-query'
-import { Link } from 'react-router-dom'
+import { Link, Navigate } from 'react-router-dom'
 
 import { EmptyState, Spinner } from '../components/ui'
+import { useAuth } from '../hooks/useAuth'
 import { api } from '../lib/api'
 import { formatPhone, phoneRel, timeAgo } from '../lib/format'
 import type { SearchHistoryItem } from '../lib/types'
 
 export function HistoryPage() {
+  const { user, loading } = useAuth()
   const q = useQuery({
     queryKey: ['history'],
     queryFn: async () => (await api.get<{ history: (SearchHistoryItem & { phone_number?: unknown; searched_at?: string })[] }>('/user/history')).data,
+    enabled: !!user,
   })
 
+  if (!user) {
+    if (!loading) return <Navigate to="/login?next=/history" replace />
+    return <Spinner />
+  }
   if (q.isLoading) return <Spinner />
   const items = q.data?.history ?? []
 

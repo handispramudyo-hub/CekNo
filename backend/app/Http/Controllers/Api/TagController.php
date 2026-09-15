@@ -10,12 +10,12 @@ use Illuminate\Http\Request;
 
 class TagController extends Controller
 {
-    public function index(PhoneNumber $number): JsonResponse
+    public function index(PhoneNumber $phone): JsonResponse
     {
-        return response()->json(['tags' => $number->tags]);
+        return response()->json(['tags' => $phone->tags]);
     }
 
-    public function store(Request $request, PhoneNumber $number): JsonResponse
+    public function store(Request $request, PhoneNumber $phone): JsonResponse
     {
         $data = $request->validate([
             'name' => ['required', 'string', 'max:40'],
@@ -27,7 +27,7 @@ class TagController extends Controller
             ['name' => $data['name'], 'status' => 'approved'],
         );
 
-        $phoneTag = $number->phoneTags()->firstOrCreate(
+        $phoneTag = $phone->phoneTags()->firstOrCreate(
             ['tag_id' => $tag->id, 'user_id' => auth()->id()],
             ['status' => 'approved'],
         );

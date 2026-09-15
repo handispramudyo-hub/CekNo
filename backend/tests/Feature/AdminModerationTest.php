@@ -79,7 +79,7 @@ class AdminModerationTest extends TestCase
 
         // Review pending tidak tampil ke publik
         $this->withUserToken($user)
-            ->getJson("/api/numbers/{$phoneId}/reviews")
+            ->getJson('/api/numbers/087812345678/reviews')
             ->assertOk()
             ->assertJsonCount(0, 'reviews');
 
@@ -88,7 +88,7 @@ class AdminModerationTest extends TestCase
             ->assertOk();
 
         $this->withUserToken($user)
-            ->getJson("/api/numbers/{$phoneId}/reviews")
+            ->getJson('/api/numbers/087812345678/reviews')
             ->assertOk()
             ->assertJsonCount(1, 'reviews');
     }
@@ -109,7 +109,7 @@ class AdminModerationTest extends TestCase
             ->assertForbidden();
 
         $this->withUserToken($user)
-            ->postJson("/api/numbers/{$phoneId}/reports", ['category' => 'fraud', 'description' => 'x'])
+            ->postJson('/api/numbers/081234567890/reports', ['category' => 'fraud', 'description' => 'x'])
             ->assertForbidden();
     }
 }

@@ -65,7 +65,7 @@ class NumberFlowTest extends TestCase
         $phoneId = $search->json('phone_number.id');
 
         $this->withToken($token)
-            ->postJson("/api/numbers/{$phoneId}/reports", [
+            ->postJson('/api/numbers/0819988776/reports', [
                 'category' => 'fraud',
                 'description' => 'Mengaku dari bank dan meminta kode OTP untuk verifikasi rekening penuh.',
             ])

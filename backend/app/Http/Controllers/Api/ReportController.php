@@ -11,7 +11,7 @@ use Illuminate\Http\Request;
 
 class ReportController extends Controller
 {
-    public function store(Request $request, PhoneNumber $number, AntiAbuseService $antiAbuse): JsonResponse
+    public function store(Request $request, PhoneNumber $phone, AntiAbuseService $antiAbuse): JsonResponse
     {
         $data = $request->validate([
             'category' => ['required', 'string', 'in:'.implode(',', Report::CATEGORIES)],
@@ -20,7 +20,7 @@ class ReportController extends Controller
         ]);
 
         $hash = hash('sha256', strtolower($data['category'].'|'.$data['description']));
-        $duplicate = $number->reports()
+        $duplicate = $phone->reports()
             ->where('description_hash', $hash)
             ->where('created_at', '>=', now()->subDays(7))
             ->exists();
@@ -29,7 +29,7 @@ class ReportController extends Controller
             return response()->json(['message' => 'Laporan serupa sudah pernah dikirim untuk nomor ini.'], 422);
         }
 
-        $report = $number->reports()->create([
+        $report = $phone->reports()->create([
             'user_id' => auth()->id(),
             'category' => $data['category'],
             'description' => $data['description'],

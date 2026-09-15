@@ -56,17 +56,17 @@ class NumberController extends Controller
         ]);
     }
 
-    public function show(Request $request, PhoneNumber $number): JsonResponse
+    public function show(Request $request, PhoneNumber $phone): JsonResponse
     {
-        $number->load([
+        $phone->load([
             'tags',
             'reports' => fn ($q) => $q->where('status', 'approved'),
             'reviews' => fn ($q) => $q->where('status', 'approved'),
         ]);
 
         return response()->json([
-            'phone_number' => $number,
-            'risk_assessment' => $number->latestRiskAssessment,
+            'phone_number' => $phone,
+            'risk_assessment' => $phone->latestRiskAssessment,
         ]);
     }
 }

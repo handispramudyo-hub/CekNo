@@ -11,14 +11,14 @@ use Illuminate\Http\Request;
 
 class ReviewController extends Controller
 {
-    public function store(Request $request, PhoneNumber $number): JsonResponse
+    public function store(Request $request, PhoneNumber $phone): JsonResponse
     {
         $data = $request->validate([
             'rating' => ['required', 'integer', 'between:1,5'],
             'comment' => ['nullable', 'string', 'max:2000'],
         ]);
 
-        $review = $number->reviews()->create([
+        $review = $phone->reviews()->create([
             'user_id' => auth()->id(),
             'rating' => $data['rating'],
             'comment' => $data['comment'] ?? null,

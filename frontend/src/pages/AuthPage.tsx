@@ -44,6 +44,7 @@ export function AuthPage({ mode }: { mode: 'login' | 'register' }) {
       <form onSubmit={submit} className="grid gap-3">
         {!isLogin && (
           <input
+            data-testid="name"
             required
             value={name}
             onChange={(e) => setName(e.target.value)}
@@ -53,6 +54,7 @@ export function AuthPage({ mode }: { mode: 'login' | 'register' }) {
           />
         )}
         <input
+          data-testid="email"
           required
           type="email"
           value={email}
@@ -62,6 +64,7 @@ export function AuthPage({ mode }: { mode: 'login' | 'register' }) {
           className="h-12 rounded-2xl border-2 border-outline-variant bg-surface px-4 outline-none focus:border-primary"
         />
         <input
+          data-testid="password"
           required
           type="password"
           value={password}

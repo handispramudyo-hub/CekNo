@@ -18,8 +18,8 @@ export function Button({
   }
   return (
     <button
+      type={props.type ?? 'submit'}
       className={`inline-flex h-11 items-center justify-center gap-2 rounded-2xl px-5 text-sm font-semibold transition active:scale-[.98] disabled:cursor-not-allowed ${styles[variant]} ${className}`}
-      type="button"
       {...props}
     >
       {children}

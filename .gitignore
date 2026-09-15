@@ -21,6 +21,13 @@ backend/.phpunit.result.cache
 frontend/node_modules/
 frontend/dist/
 frontend/.svelte-kit/
+frontend/coverage/
+
+# Playwright
+frontend/test-results/
+frontend/playwright-report/
+e2e/test-results/
+e2e/playwright-report/
 
 # Python
 ml-service/__pycache__/

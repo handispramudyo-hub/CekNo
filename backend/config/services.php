@@ -35,4 +35,14 @@ return [
         ],
     ],
 
+    // Rate limit (per menit); dev/E2E sengaja longgar
+    'throttle' => [
+        'register'  => (int) env('THROTTLE_REGISTER', 6),
+        'login'     => (int) env('THROTTLE_LOGIN', 5),
+        'report'    => (int) env('THROTTLE_REPORT', 5),
+        'review'    => (int) env('THROTTLE_REVIEW', 10),
+        'tag'       => (int) env('THROTTLE_TAG', 10),
+        'search'    => (int) env('THROTTLE_SEARCH', 30),
+    ],
+
 ];

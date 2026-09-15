@@ -5,8 +5,7 @@ import toast from 'react-hot-toast'
 
 import { Button, Card, EmptyState, Spinner } from '../components/ui'
 import { RiskGauge } from '../components/RiskGauge'
-import { useAuth } from '../hooks/useAuth'
-import { api, apiError } from '../lib/api'
+import { api, apiError, tokenStore } from '../lib/api'
 import { copyText, formatDate, formatPhone, levelMeta, timeAgo } from '../lib/format'
 import type { NumberDetail, Report, Review, TagChip } from '../lib/types'
 
@@ -63,7 +62,6 @@ export function NumberPage() {
   const { number: rawNumber } = useParams()
   const numberParam = (rawNumber ?? '').replace(/\D/g, '')
   const navigate = useNavigate()
-  const { user } = useAuth()
   const [reviewOpen, setReviewOpen] = useState(false)
   const [rating, setRating] = useState(5)
   const [comment, setComment] = useState('')
@@ -81,12 +79,10 @@ export function NumberPage() {
     enabled: numberParam.length > 0,
   })
 
-  const phoneId = search.data?.phone_number?.id
-
   const detail = useQuery({
-    queryKey: ['number', phoneId],
-    queryFn: async () => (await api.get<NumberDetail>(`/numbers/${phoneId}`)).data,
-    enabled: !!phoneId,
+    queryKey: ['number', numberParam],
+    queryFn: async () => (await api.get<NumberDetail>(`/numbers/${numberParam}`)).data,
+    enabled: numberParam.length > 0,
   })
 
   if (search.isLoading) return <Spinner label="Menghafal nomor…" />
@@ -108,7 +104,7 @@ export function NumberPage() {
     if (!provide('Masuk untuk menulis ulasan')) return
     setSending(true)
     try {
-      await api.post(`/numbers/${phoneId}/reviews`, { rating, comment })
+      await api.post(`/numbers/${numberParam}/reviews`, { rating, comment })
       toast.success('Ulasan terkirim dan menunggu moderasi')
       setReviewOpen(false)
       setComment('')
@@ -125,7 +121,7 @@ export function NumberPage() {
     const name = proposedTag.trim()
     if (!name) return
     try {
-      await api.post(`/numbers/${phoneId}/tags`, { name })
+      await api.post(`/numbers/${numberParam}/tags`, { name })
       toast.success('Tag diusulkan, menunggu persetujuan')
       setProposedTag('')
     } catch (err) {
@@ -134,7 +130,7 @@ export function NumberPage() {
   }
 
   function provide(message: string): boolean {
-    if (user) return true
+    if (tokenStore.get()) return true
     toast(message)
     setTimeout(() => navigate('/login'), 700)
     return false
@@ -177,7 +173,12 @@ export function NumberPage() {
       )}
 
       <section className="grid grid-cols-2 gap-3">
-        <Button onClick={() => navigate(`/report?phone=${numberParam}`)}>
+        <Button
+          onClick={() => {
+            if (!provide('Masuk untuk melaporkan nomor ini')) return
+            navigate(`/report?phone=${numberParam}`)
+          }}
+        >
           <span className="icon">add_alert</span> Lapor nomor ini
         </Button>
         <Button variant="secondary" onClick={() => setReviewOpen((v) => !v)}>

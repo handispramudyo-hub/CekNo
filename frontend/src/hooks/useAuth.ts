@@ -11,7 +11,7 @@ export function useAuth() {
 
   const me = useQuery({
     queryKey: ['me'],
-    queryFn: async () => (tokenStore.get() ? (await api.get<User>('/auth/me')).data : null),
+    queryFn: async () => (tokenStore.get() ? (await api.get<{ user: User }>('/auth/me')).data.user : null),
     retry: false,
   })
 
@@ -29,7 +29,12 @@ export function useAuth() {
 
   const register = useMutation({
     mutationFn: async (payload: { name: string; email: string; password: string }) =>
-      (await api.post<{ token: string; user: User }>('/auth/register', payload)).data,
+      (
+        await api.post<{ token: string; user: User }>('/auth/register', {
+          ...payload,
+          password_confirmation: payload.password,
+        })
+      ).data,
     onSuccess: (data) => {
       tokenStore.set(data.token)
       queryClient.setQueryData(['me'], data.user)

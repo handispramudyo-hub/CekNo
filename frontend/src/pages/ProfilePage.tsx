@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
-import { Link } from 'react-router-dom'
+import { Link, Navigate } from 'react-router-dom'
 
 import { Button, EmptyState, Spinner } from '../components/ui'
 import { useAuth } from '../hooks/useAuth'
@@ -20,14 +20,17 @@ function StatusPill({ status }: { status: string }) {
 }
 
 export function ProfilePage() {
-  const { user, isAdmin, logout } = useAuth()
+  const { user, isAdmin, logout, loading } = useAuth()
   const [tab, setTab] = useState<'reports' | 'reviews' | 'tags'>('reports')
 
   const reports = useQuery({ queryKey: ['my-reports'], queryFn: async () => (await api.get<Page<Report>>('/user/reports')).data })
   const reviews = useQuery({ queryKey: ['my-reviews'], queryFn: async () => (await api.get<Page<Review>>('/user/reviews')).data })
   const tags = useQuery({ queryKey: ['my-tags'], queryFn: async () => (await api.get<Page<TagChip>>('/user/tags')).data })
 
-  if (!user) return <Spinner label="Memuat profil…" />
+  if (!user) {
+    if (!loading) return <Navigate to="/login?next=/profile" replace />
+    return <Spinner label="Memuat profil…" />
+  }
 
   const tabs = [
     ['reports', 'Laporan', reports.data?.total ?? reports.data?.data.length ?? 0],
