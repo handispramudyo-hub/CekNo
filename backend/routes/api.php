@@ -24,7 +24,7 @@ Route::get('/ml/health', fn () => response()->json(['status' => 'ok']));
 Route::get('/numbers/search', [NumberController::class, 'search'])->middleware('throttle:30,1');
 Route::get('/numbers/{number}', [NumberController::class, 'show']);
 
-Route::middleware('auth:sanctum')->group(function () {
+Route::middleware(['auth:sanctum', 'user.active'])->group(function () {
     Route::post('/auth/logout', [AuthController::class, 'logout']);
     Route::get('/auth/me', [AuthController::class, 'me']);
 
