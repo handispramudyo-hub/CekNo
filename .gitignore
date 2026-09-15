@@ -31,6 +31,9 @@ ml-service/*.egg-info/
 ml-service/models/xgboost/*.json
 ml-service/models/xgboost/*.model
 ml-service/models/indobert/
+ml-service/models/*.joblib
+ml-service/.pytest_cache/
+ml-service/.ruff_cache/
 
 # IDE / OS
 .vscode/
