@@ -32,7 +32,15 @@ class ContactContributionController extends Controller
             ->latest()
             ->paginate(20);
 
-        return response()->json(['contributions' => $contributions]);
+        return response()->json([
+            'consent' => $request->user()
+                ->consents()
+                ->where('scope', 'contact_contribution')
+                ->latest('consent_version')
+                ->first(),
+            'consent_version' => self::CONSENT_VERSION,
+            'contributions' => $contributions,
+        ]);
     }
 
     /**
