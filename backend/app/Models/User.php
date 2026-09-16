@@ -78,4 +78,14 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return $this->hasMany(SearchHistory::class);
     }
+
+    public function consents()
+    {
+        return $this->hasMany(Consent::class);
+    }
+
+    public function contactContributions()
+    {
+        return $this->hasMany(ContactContribution::class);
+    }
 }

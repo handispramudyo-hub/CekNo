@@ -19,6 +19,8 @@ class PhoneNumber extends Model
         'total_reviews',
         'total_tags',
         'search_count',
+        'total_contributions',
+        'contributor_count',
         'status',
     ];
 
@@ -30,6 +32,8 @@ class PhoneNumber extends Model
             'total_reviews' => 'integer',
             'total_tags' => 'integer',
             'search_count' => 'integer',
+            'total_contributions' => 'integer',
+            'contributor_count' => 'integer',
         ];
     }
 
@@ -67,6 +71,11 @@ class PhoneNumber extends Model
     public function searchHistories()
     {
         return $this->hasMany(SearchHistory::class);
+    }
+
+    public function contactContributions()
+    {
+        return $this->hasMany(ContactContribution::class);
     }
 
     public function latestRiskAssessment()

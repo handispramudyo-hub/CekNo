@@ -45,6 +45,7 @@ services:
       THROTTLE_FORGOT: "${THROTTLE_FORGOT:-5}"
       THROTTLE_RESET: "${THROTTLE_RESET:-5}"
       THROTTLE_PROFILE: "${THROTTLE_PROFILE:-10}"
+      THROTTLE_CONTRIBUTION: "${THROTTLE_CONTRIBUTION:-10}"
     depends_on:
       mysql:
         condition: service_healthy

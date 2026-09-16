@@ -9,6 +9,7 @@ use App\Http\Controllers\Api\Admin\AuditLogController;
 use App\Http\Controllers\Api\Admin\CategoryController;
 use App\Http\Controllers\Api\Admin\MlModelController;
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\ContactContributionController;
 use App\Http\Controllers\Api\NumberController;
 use App\Http\Controllers\Api\ReportController;
 use App\Http\Controllers\Api\ReviewController;
@@ -52,6 +53,11 @@ Route::middleware(['auth:sanctum', 'user.active'])->group(function () {
     Route::put('/user/profile', [UserController::class, 'updateProfile'])->middleware('throttle:auth.profile');
     Route::put('/user/password', [UserController::class, 'updatePassword'])->middleware('throttle:auth.profile');
 
+    // Kontribusi kontak
+    Route::get('/user/contact-contributions', [ContactContributionController::class, 'index']);
+    Route::post('/user/contact-contributions/sync', [ContactContributionController::class, 'sync'])->middleware('throttle:auth.contribution');
+    Route::delete('/user/contact-contributions/{contribution}', [ContactContributionController::class, 'destroy']);
+
     // Admin (role via policy authorization di controller)
     Route::prefix('admin')->group(function () {
         Route::get('/dashboard', AdminDashboardController::class);
@@ -68,6 +74,8 @@ Route::middleware(['auth:sanctum', 'user.active'])->group(function () {
         Route::post('/reviews/{review}/moderate', [AdminModerationController::class, 'moderateReview']);
         Route::get('/tags', [AdminModerationController::class, 'tags']);
         Route::post('/tags/{phoneTag}/moderate', [AdminModerationController::class, 'moderateTag']);
+        Route::get('/contributions', [AdminModerationController::class, 'contributions']);
+        Route::post('/contributions/{contribution}/moderate', [AdminModerationController::class, 'moderateContribution']);
 
         Route::get('/categories', [CategoryController::class, 'index']);
         Route::post('/categories', [CategoryController::class, 'store']);

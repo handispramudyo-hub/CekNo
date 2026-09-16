@@ -46,6 +46,7 @@ return [
         'forgot'    => (int) env('THROTTLE_FORGOT', 5),
         'reset'     => (int) env('THROTTLE_RESET', 5),
         'profile'   => (int) env('THROTTLE_PROFILE', 10),
+        'contribution' => (int) env('THROTTLE_CONTRIBUTION', 10),
     ],
 
 ];

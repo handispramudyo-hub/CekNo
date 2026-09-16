@@ -21,6 +21,7 @@ class AdminDashboardController extends Controller
             'pending_reports' => \App\Models\Report::where('status', 'pending')->count(),
             'pending_reviews' => \App\Models\Review::where('status', 'pending')->count(),
             'pending_tags' => \App\Models\PhoneTag::where('status', 'pending')->count(),
+            'pending_contributions' => \App\Models\ContactContribution::where('status', 'pending')->count(),
             'new_users' => User::where('created_at', '>=', now()->subDays(7))->count(),
             'total_numbers' => PhoneNumber::count(),
             'recent_moderation' => ModerationLog::with('admin')->latest()->limit(10)->get(),

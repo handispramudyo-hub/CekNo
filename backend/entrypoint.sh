@@ -20,4 +20,7 @@ if [ -n "$1" ]; then
     exec "$@"
 fi
 
+# Scheduler berjalan di latar belakang (schedule:work = jalankan schedule:run tiap menit)
+php artisan schedule:work >> /var/www/backend/storage/logs/scheduler.log 2>&1 &
+
 exec php-fpm
