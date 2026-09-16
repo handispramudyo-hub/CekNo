@@ -49,7 +49,7 @@ jobs:
         run: php artisan test --testsuite=Unit,Feature
         env:
           DB_CONNECTION: sqlite
-          DB_DATABASE: :memory:
+          DB_DATABASE: ":memory:"
           CACHE_STORE: array
           SESSION_DRIVER: array
           QUEUE_CONNECTION: sync
