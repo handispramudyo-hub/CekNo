@@ -10,12 +10,13 @@ interface Page<T> {
   data: T[]
 }
 
-type Kind = 'reports' | 'reviews' | 'tags'
+type Kind = 'reports' | 'reviews' | 'tags' | 'contributions'
 
 const KIND_META: Record<Kind, { label: string; icon: string }> = {
   reports: { label: 'Laporan', icon: 'flag' },
   reviews: { label: 'Ulasan', icon: 'rate_review' },
   tags: { label: 'Label', icon: 'label' },
+  contributions: { label: 'Kontribusi', icon: 'contacts' },
 }
 
 function ModerateButtons({ onModerate, disabled }: { onModerate: (action: 'approved' | 'rejected') => void; disabled?: boolean }) {
@@ -83,7 +84,7 @@ export function AdminModerationPage() {
             {items.map((item: any) => {
               const number = phoneRel(item.phone_number)
               const user = item.user?.name ?? item.tag?.name ?? 'Pengguna'
-              const body = kind === 'reports' ? item.description : kind === 'reviews' ? item.comment : null
+              const body = item.label ?? (item.description ?? (item.comment ?? `Label: ${item.tag?.name}`))
               return (
                 <li key={item.id} className="rounded-2xl bg-surface-container p-3.5">
                   <div className="flex items-center gap-2 text-sm">
