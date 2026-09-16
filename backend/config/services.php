@@ -43,6 +43,9 @@ return [
         'review'    => (int) env('THROTTLE_REVIEW', 10),
         'tag'       => (int) env('THROTTLE_TAG', 10),
         'search'    => (int) env('THROTTLE_SEARCH', 30),
+        'forgot'    => (int) env('THROTTLE_FORGOT', 5),
+        'reset'     => (int) env('THROTTLE_RESET', 5),
+        'profile'   => (int) env('THROTTLE_PROFILE', 10),
     ],
 
 ];

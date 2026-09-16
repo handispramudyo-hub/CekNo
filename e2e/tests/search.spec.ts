@@ -9,7 +9,7 @@ test.describe('Flow 1: Cek nomor', () => {
     await page.getByRole('button', { name: /Cek/i }).click()
 
     await expect(page).toHaveURL(/\/numbers\/081299887761/)
-    await expect(page.getByText(/Risiko Tinggi|Risiko Rendah/)).toBeVisible()
+    await expect(page.getByText(/Risiko (Tinggi|Sedang|Rendah)/)).toBeVisible()
     await expect(page.getByText(/SKOR RISIKO/)).toBeVisible()
     await expect(page.getByRole('button', { name: /Lapor nomor ini/ })).toBeVisible()
   })

@@ -61,6 +61,59 @@ export function useAuth() {
     },
   })
 
+  const forgotPassword = useMutation({
+    mutationFn: async (payload: { email: string }) =>
+      (await api.post<{ message: string }>('/auth/forgot-password', payload)).data,
+    onError: (err) => toast.error(apiError(err)),
+  })
+
+  const resetPassword = useMutation({
+    mutationFn: async (payload: { token: string; email: string; password: string }) =>
+      (await api.post<{ message: string }>('/auth/reset-password', {
+        ...payload,
+        password_confirmation: payload.password,
+      })).data,
+    onError: (err) => toast.error(apiError(err)),
+  })
+
+  const updateProfile = useMutation({
+    mutationFn: async (payload: { name: string; phone?: string | null }) =>
+      (await api.put<{ user: User }>('/user/profile', payload)).data.user,
+    onSuccess: (data) => {
+      queryClient.setQueryData(['me'], data)
+      toast.success('Profil berhasil diperbarui')
+    },
+    onError: (err) => toast.error(apiError(err)),
+  })
+
+  const updatePassword = useMutation({
+    mutationFn: async (payload: { current_password: string; password: string }) =>
+      (await api.put<{ message: string }>('/user/password', {
+        ...payload,
+        password_confirmation: payload.password,
+      })).data,
+    onSuccess: () => toast.success('Kata sandi berhasil diperbarui'),
+    onError: (err) => toast.error(apiError(err)),
+  })
+
+  const resendVerification = useMutation({
+    mutationFn: async () => (await api.post<{ message: string }>('/auth/email/resend')).data,
+    onSuccess: (data) => toast.success(data.message),
+    onError: (err) => toast.error(apiError(err)),
+  })
+
   const user = me.data ?? null
-  return { user, loading: me.isLoading, isAdmin: user?.role === 'admin', login, register, logout }
+  return {
+    user,
+    loading: me.isLoading,
+    isAdmin: user?.role === 'admin',
+    login,
+    register,
+    logout,
+    forgotPassword,
+    resetPassword,
+    updateProfile,
+    updatePassword,
+    resendVerification,
+  }
 }

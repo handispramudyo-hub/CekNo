@@ -18,6 +18,9 @@ use Illuminate\Support\Facades\Route;
 
 Route::post('/auth/register', [AuthController::class, 'register'])->middleware('throttle:auth.register');
 Route::post('/auth/login', [AuthController::class, 'login'])->middleware('throttle:auth.login');
+Route::post('/auth/forgot-password', [AuthController::class, 'forgot'])->middleware('throttle:auth.forgot');
+Route::post('/auth/reset-password', [AuthController::class, 'reset'])->middleware('throttle:auth.reset');
+Route::post('/auth/email/verify', [AuthController::class, 'verifyEmail']);
 Route::get('/ml/health', fn () => response()->json(['status' => 'ok']));
 
 // Search & number profile dapat diakses guest (rate-limited, tanpa identitas pribadi)
@@ -27,6 +30,7 @@ Route::get('/numbers/{phone}', [NumberController::class, 'show']);
 Route::middleware(['auth:sanctum', 'user.active'])->group(function () {
     Route::post('/auth/logout', [AuthController::class, 'logout']);
     Route::get('/auth/me', [AuthController::class, 'me']);
+    Route::post('/auth/email/resend', [AuthController::class, 'resendVerification']);
 
     Route::get('/numbers/{phone}/tags', [TagController::class, 'index']);
     Route::post('/numbers/{phone}/tags', [TagController::class, 'store'])->middleware('throttle:auth.tag');
@@ -45,6 +49,8 @@ Route::middleware(['auth:sanctum', 'user.active'])->group(function () {
     Route::get('/user/reports', [UserController::class, 'reports']);
     Route::get('/user/reviews', [UserController::class, 'reviews']);
     Route::get('/user/tags', [UserController::class, 'tags']);
+    Route::put('/user/profile', [UserController::class, 'updateProfile'])->middleware('throttle:auth.profile');
+    Route::put('/user/password', [UserController::class, 'updatePassword'])->middleware('throttle:auth.profile');
 
     // Admin (role via policy authorization di controller)
     Route::prefix('admin')->group(function () {

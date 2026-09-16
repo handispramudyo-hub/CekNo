@@ -74,6 +74,11 @@ export function AuthPage({ mode }: { mode: 'login' | 'register' }) {
           minLength={8}
           className="h-12 rounded-2xl border-2 border-outline-variant bg-surface px-4 outline-none focus:border-primary"
         />
+        {isLogin && (
+          <Link to="/forgot-password" className="self-end text-sm font-semibold text-primary">
+            Lupa kata sandi?
+          </Link>
+        )}
         <Button className="w-full" disabled={pending}>
           {pending ? 'Memproses…' : isLogin ? 'Masuk' : 'Daftar'}
         </Button>

@@ -42,7 +42,7 @@ class AppServiceProvider extends ServiceProvider
 
     private function configureRateLimiting(): void
     {
-        $keys = ['register', 'login', 'report', 'review', 'tag', 'search'];
+        $keys = ['register', 'login', 'report', 'review', 'tag', 'search', 'forgot', 'reset', 'profile'];
 
         foreach ($keys as $key) {
             RateLimiter::for("auth.{$key}", function (Request $request) use ($key) {
