@@ -17,10 +17,10 @@ newgrp docker
 ## 1. Clone & konfigurasi
 
 ```bash
-git clone https://github.com/<org>/cekno.git && cd cekno
+git clone https://github.com/handispramudyo-hub/Cekno.git && cd Cekno
 cp .env.docker .env
-php -r "echo 'APP_KEY='.base64_encode(random_bytes(32)).PHP_EOL;"   # jika php tersedia
-# atau gunakan: docker run --rm php:8.2-alpine php -r "echo 'APP_KEY='.base64_encode(random_bytes(32)).PHP_EOL;"
+# APP_KEY akan di-generate oleh boot.sh.
+# Jika ingin manual: sed -i "s|APP_KEY=.*|APP_KEY=base64:$(openssl rand -base64 32)|" .env
 ```
 
 Edit `.env` bila perlu:
@@ -28,20 +28,23 @@ Edit `.env` bila perlu:
 | Variabel | Contoh |
 |---|---|
 | `APP_PORT` | `80` (atau `8000` di belakang reverse proxy) |
-| `APP_KEY` | hasil generate (wajib) |
+| `APP_KEY` | otomatis terisi oleh boot.sh; isi manual jika ingin |
 | `DB_PASSWORD` / `DB_ROOT_PASSWORD` | ganti dengan nilai kuat! |
 
 ## 2. Bangun & jalankan
 
 ```bash
+chmod +x scripts/boot.sh
 ./scripts/boot.sh
 ```
 
 `boot.sh` melakukan:
-1. `docker compose build`
-2. menunggu `mysql` sehat
-3. `migrate --force` + `db:seed --class=DemoSeeder --force` (data demo; hapus baris seed untuk produksi bersih)
-4. `docker compose up -d`
+1. Generate `APP_KEY` jika belum ada
+2. `docker compose build` (backend + nginx + ml-service; dist frontend di-bake ke nginx)
+3. menunggu `mysql` & `redis` sehat
+4. `migrate --force` + `db:seed --class=DemoSeeder --force` (data demo; hapus baris seed untuk produksi bersih)
+5. `docker compose up -d`
+6. cetak URL akses
 
 Silakan jalankan perintahnya manual jika ingin visual:
 
@@ -57,8 +60,8 @@ docker compose up -d
 ## 3. Verifikasi
 
 ```bash
-curl -s http://localhost/api/ml/health        # -> {"status":"ok",...}
-curl -s "http://localhost/api/numbers/search?phone=081299887761" | head -c 300
+curl -s http://localhost/api/ml/health        # -> {"status":"ok"}
+curl -s http://localhost/api/numbers/search?phone=081299887761 | head -c 300
 ```
 
 Buka `http://<server-ip>/` di browser. Login admin default (hanya demo): `admin@cekno.id` / `password`.
@@ -106,7 +109,8 @@ git pull
 
 | Gejala | Cek |
 |---|---|
-| `502 Bad Gateway` pada `/api` | `docker compose logs backend`; pastikan `APP_KEY` terisi |
+| `502 Bad Gateway` pada `/api` | `docker compose logs backend`; pastikan `APP_KEY` terisi & vendor ada di image |
 | MySQL tak sehat | `docker compose logs mysql`; _volume lama dengan password beda_ → hapus volume `mysql-data` lalu up ulang |
 | Skor risiko tetap `low`/null | `docker compose logs ml-service`; pastikan `ML_SERVICE_URL` benar dan `/ml/health` ok |
-| Frontend kosong (404 SPA) | cache CDN/browser; `try_files` sudah menangani fallback |
+| Frontend kosong (404 SPA) | cache CDN/browser; nginx SPA fallback sudah aktif; pastikan build frontend sukses |
+| Healthcheck backend gagal | `docker compose ps`: pastikan fpm bind port 9000; cek `docker compose logs backend` |

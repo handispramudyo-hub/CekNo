@@ -1,3 +1,5 @@
+# Root build context (nginx) — JANGAN exclude frontend/ atau docker/.
+
 .git
 .github
 .vscode
@@ -5,10 +7,10 @@
 node_modules
 frontend/node_modules
 frontend/dist
-frontend/.svelte-kit
+backend/node_modules
 backend/vendor
-backend/.phpunit.cache
 backend/.env
+backend/.phpunit.cache
 ml-service/.venv
 ml-service/venv
 ml-service/models/*.joblib
@@ -16,11 +18,14 @@ ml-service/.pytest_cache
 ml-service/__pycache__
 ml-service/**/__pycache__
 ml-service/.ruff_cache
+e2e
+scripts
+docs
 docker/mysql-data
 docker/redis-data
 *.log
 *.md
-!frontend/dist
 README.md
 PRD.md
-docs/
+test-results
+playwright-report
