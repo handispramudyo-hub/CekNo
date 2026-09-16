@@ -16,6 +16,7 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile
+    entrypoint: ["/usr/local/bin/entrypoint.sh"]
     volumes:
       - backend-storage:/var/www/backend/storage
       - backend-cache:/var/www/backend/bootstrap/cache
@@ -35,6 +36,15 @@ services:
       SESSION_DRIVER: redis
       QUEUE_CONNECTION: sync
       ML_SERVICE_URL: "http://ml-service:8001"
+      THROTTLE_REGISTER: "${THROTTLE_REGISTER:-6}"
+      THROTTLE_LOGIN: "${THROTTLE_LOGIN:-5}"
+      THROTTLE_REPORT: "${THROTTLE_REPORT:-5}"
+      THROTTLE_REVIEW: "${THROTTLE_REVIEW:-10}"
+      THROTTLE_TAG: "${THROTTLE_TAG:-10}"
+      THROTTLE_SEARCH: "${THROTTLE_SEARCH:-30}"
+      THROTTLE_FORGOT: "${THROTTLE_FORGOT:-5}"
+      THROTTLE_RESET: "${THROTTLE_RESET:-5}"
+      THROTTLE_PROFILE: "${THROTTLE_PROFILE:-10}"
     depends_on:
       mysql:
         condition: service_healthy

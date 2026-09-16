@@ -124,3 +124,85 @@ jobs:
           docker compose -f docker-compose.yml build --build-arg CACHEBUST=$(git rev-parse HEAD)
       - name: Validate compose config
         run: docker compose -f docker-compose.yml config --quiet
+
+  e2e:
+    name: E2E (Playwright vs stack Docker)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Prepare env
+        run: |
+          cp .env.docker .env
+          KEY=$(openssl rand -base64 32)
+          sed -i "s|^APP_KEY=.*|APP_KEY=base64:${KEY}|" .env
+
+      - name: Build images
+        run: docker compose build
+
+      - name: Start database & cache
+        run: docker compose up -d mysql redis
+
+      - name: Wait for mysql & redis
+        run: |
+          for i in $(seq 1 60); do
+            M=$(docker inspect -f '{{.State.Health.Status}}' $(docker compose ps -q mysql) 2>/dev/null || echo starting)
+            R=$(docker inspect -f '{{.State.Health.Status}}' $(docker compose ps -q redis) 2>/dev/null || echo starting)
+            if [ "$M" = "healthy" ] && [ "$R" = "healthy" ]; then
+              echo "DB + cache healthy"
+              exit 0
+            fi
+            sleep 3
+          done
+          echo "Timed out waiting for mysql/redis"
+          docker compose logs mysql redis
+          exit 1
+
+      - name: Migrate & seed
+        run: |
+          docker compose run --rm backend php artisan migrate --force
+          docker compose run --rm backend php artisan db:seed --force
+          docker compose run --rm backend php scripts/seed_pending_report.php
+
+      - name: Start full stack
+        run: docker compose up -d
+
+      - name: Wait for app
+        run: |
+          for i in $(seq 1 60); do
+            if curl -fsS http://localhost:8000/api/ml/health >/dev/null 2>&1; then
+              echo "App reachable"
+              exit 0
+            fi
+            sleep 3
+          done
+          docker compose logs
+          exit 1
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: e2e/package-lock.json
+
+      - name: Install e2e dependencies
+        working-directory: e2e
+        run: npm ci
+
+      - name: Install Playwright browser
+        working-directory: e2e
+        run: npx playwright install --with-deps chromium
+
+      - name: Run E2E
+        working-directory: e2e
+        env:
+          E2E_BASE_URL: http://127.0.0.1:8000
+        run: npx playwright test
+
+      - name: Upload Playwright report
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: e2e/playwright-report
+          retention-days: 7
