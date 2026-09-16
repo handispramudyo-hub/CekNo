@@ -27,6 +27,8 @@ export default function App() {
       <Routes>
         <Route element={<AppLayout />}>
           <Route path="/" element={<HomePage />} />
+          <Route path="/search" element={<HomePage />} />
+          <Route path="/number/:number" element={<NumberPage />} />
           <Route path="/numbers/:number" element={<NumberPage />} />
           <Route path="/report" element={<ReportPage />} />
           <Route path="/history" element={<HistoryPage />} />

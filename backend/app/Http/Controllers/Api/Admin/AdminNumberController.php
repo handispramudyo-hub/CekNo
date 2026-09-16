@@ -7,6 +7,7 @@ use App\Models\PhoneNumber;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 
 class AdminNumberController extends Controller
 {
@@ -32,6 +33,9 @@ class AdminNumberController extends Controller
         $data = $request->validate(['status' => ['required', 'in:active,hidden']]);
 
         $number->forceFill(['status' => $data['status']])->save();
+
+        // Buang cache lookup nomor agar status baru langsung terlihat.
+        Cache::forget('phone:'.$number->normalized_number);
 
         return response()->json(['phone_number' => $number]);
     }
