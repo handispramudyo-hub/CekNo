@@ -9,8 +9,10 @@ import { HistoryPage } from './pages/HistoryPage'
 import { HomePage } from './pages/HomePage'
 import { NumberPage } from './pages/NumberPage'
 import { ProfilePage } from './pages/ProfilePage'
+import { PrivacyPage } from './pages/PrivacyPage'
 import { ReportPage } from './pages/ReportPage'
 import { ResetPasswordPage } from './pages/ResetPasswordPage'
+import { TermsPage } from './pages/TermsPage'
 import { VerifyEmailPage } from './pages/VerifyEmailPage'
 import { AdminDashboardPage } from './pages/admin/AdminDashboardPage'
 import { AdminLayout } from './pages/admin/AdminLayout'
@@ -33,6 +35,8 @@ export default function App() {
           <Route path="/report" element={<ReportPage />} />
           <Route path="/history" element={<HistoryPage />} />
           <Route path="/profile" element={<ProfilePage />} />
+          <Route path="/privacy" element={<PrivacyPage />} />
+          <Route path="/terms" element={<TermsPage />} />
           <Route path="/login" element={<AuthPage mode="login" />} />
           <Route path="/register" element={<AuthPage mode="register" />} />
           <Route path="/forgot-password" element={<ForgotPasswordPage />} />

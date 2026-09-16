@@ -147,3 +147,26 @@ export interface MlModelInfo {
   metrics: Record<string, unknown> | null
   updated_at?: string
 }
+
+export interface ContactContribution {
+  id: number
+  phone_number_id?: number
+  label: string
+  category?: string
+  consent_version?: string
+  status: 'pending' | 'approved' | 'rejected' | 'withdrawn'
+  created_at?: string
+  phone_number?: { id: number; normalized_number: string }
+}
+
+export interface ContributionSyncResult {
+  created: number
+  duplicates: number
+  errors: Array<{ phone: string; message: string }>
+}
+
+export interface ContributionsResponse {
+  consent?: { id: number; consent_version: string; scope: string } | null
+  consent_version?: string
+  contributions: { data: ContactContribution[]; total?: number }
+}

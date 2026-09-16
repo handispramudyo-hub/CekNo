@@ -3,10 +3,11 @@ import { useQuery } from '@tanstack/react-query'
 import { Link, Navigate } from 'react-router-dom'
 
 import { Button, EmptyState, Spinner } from '../components/ui'
+import { ContactContributionsPanel } from '../components/ContactContributionsPanel'
 import { useAuth } from '../hooks/useAuth'
 import { api } from '../lib/api'
 import { formatPhone, phoneRel, timeAgo } from '../lib/format'
-import type { Report, Review, TagChip } from '../lib/types'
+import type { ContributionsResponse, Report, Review, TagChip } from '../lib/types'
 
 interface Page<T> {
   data: T[]
@@ -21,7 +22,7 @@ function StatusPill({ status }: { status: string }) {
 
 export function ProfilePage() {
   const { user, isAdmin, logout, loading, updateProfile, updatePassword, resendVerification } = useAuth()
-  const [tab, setTab] = useState<'reports' | 'reviews' | 'tags'>('reports')
+  const [tab, setTab] = useState<'reports' | 'reviews' | 'tags' | 'contributions'>('reports')
   const [editing, setEditing] = useState(false)
   const [name, setName] = useState('')
   const [phone, setPhone] = useState('')
@@ -31,6 +32,7 @@ export function ProfilePage() {
   const reports = useQuery({ queryKey: ['my-reports'], queryFn: async () => (await api.get<Page<Report>>('/user/reports')).data })
   const reviews = useQuery({ queryKey: ['my-reviews'], queryFn: async () => (await api.get<Page<Review>>('/user/reviews')).data })
   const tags = useQuery({ queryKey: ['my-tags'], queryFn: async () => (await api.get<Page<TagChip>>('/user/tags')).data })
+  const contributions = useQuery({ queryKey: ['my-contributions'], queryFn: async () => (await api.get<ContributionsResponse>('/user/contact-contributions')).data })
 
   if (!user) {
     if (!loading) return <Navigate to="/login?next=/profile" replace />
@@ -65,6 +67,7 @@ export function ProfilePage() {
     ['reports', 'Laporan', reports.data?.total ?? reports.data?.data.length ?? 0],
     ['reviews', 'Ulasan', reviews.data?.total ?? reviews.data?.data.length ?? 0],
     ['tags', 'Label', tags.data?.total ?? tags.data?.data.length ?? 0],
+    ['contributions', 'Kontribusi', contributions.data?.contributions?.data.length ?? 0],
   ] as const
 
   return (
@@ -249,6 +252,8 @@ export function ProfilePage() {
             ) : (
               <EmptyState icon="label" title="Belum ada label" />
             ))}
+
+          {tab === 'contributions' && <ContactContributionsPanel />}
         </ul>
       </section>
     </div>
