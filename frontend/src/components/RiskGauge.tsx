@@ -19,7 +19,7 @@ export function RiskGauge({ score, level, size = 168, showLabel = true }: Props)
   const dash = (clamped / 100) * circumference
 
   return (
-    <div className="flex flex-col items-center gap-2" role="img" aria-label={`Skor risiko ${value} dari 100`}>
+    <div className="flex flex-col items-center gap-2" data-testid="risk-level" role="img" aria-label={`Skor risiko ${value} dari 100`}>
       <svg width={size} height={size * 0.62} viewBox="0 0 144 88" className="overflow-visible">
         <path
           d={`M 8 80 A 64 64 0 0 1 136 80`}
